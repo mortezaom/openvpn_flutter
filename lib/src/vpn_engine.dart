@@ -170,11 +170,22 @@ class OpenVPN {
       var status = VpnStatus.empty();
       if (value1 == VPNStage.connected) {
         status = await _channelControl.invokeMethod("status").then((value) {
-          print("raw data: " + value.toString());
-          if (value == null) return VpnStatus.empty();
+          if (value == null){ 
+            final connected = _tempDateTime ?? DateTime.now();
+            return VpnStatus(
+              connectedOn: connected,
+              duration: _duration(DateTime.now().difference(connected).abs()),
+              packetsIn: '0',
+              packetsOut: '0',
+              byteIn: '0',
+              byteOut: '0',
+            );
+          }
+
           if (Platform.isIOS) {
             var splitted = value.split("_");
-            var connectedOn = DateTime.tryParse(splitted[0]);
+            var connectedOn = DateTime.tryParse(splitted[0]) ??
+                    _tempDateTime;
             if (connectedOn == null) return VpnStatus.empty();
             return VpnStatus(
               connectedOn: connectedOn,
