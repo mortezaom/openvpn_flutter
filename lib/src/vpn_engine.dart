@@ -167,6 +167,7 @@ class OpenVPN {
   Future<VpnStatus> status() {
     //Have to check if user already connected to get real data
     return stage().then((value) async {
+      print("raw data: " + value.toString());
       var status = VpnStatus.empty();
       if (value == VPNStage.connected) {
         status = await _channelControl.invokeMethod("status").then((value) {
